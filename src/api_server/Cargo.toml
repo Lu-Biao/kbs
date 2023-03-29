@@ -11,6 +11,7 @@ default = ["native-as", "rustls"]
 native-as = ["attestation-service/default"]
 native-as-no-verifier = ["attestation-service/rvps-native"]
 grpc-as = ["tonic", "tonic-build", "prost"]
+amber-as = ["reqwest", "jsonwebtoken"]
 rustls = ["actix-web/rustls", "dep:rustls", "dep:rustls-pemfile"]
 openssl = ["actix-web/openssl", "dep:openssl"]
 
@@ -43,6 +44,8 @@ tokio.workspace = true
 tonic = { version = "0.8", optional = true }
 uuid = { version = "1.2.2", features = ["serde", "v4"] }
 openssl = { version = "0.10.46", optional = true }
+reqwest = { version = "0.11.13", features = ["json"], optional = true }
+jsonwebtoken = {version = "8", default-features = false, optional = true }
 
 [dev-dependencies]
 tempfile.workspace = true

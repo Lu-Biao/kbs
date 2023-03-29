@@ -53,6 +53,9 @@ jobs:
     - name: build KBS with remote AS mode
       run: make kbs-grpc-as
 
+    - name: build KBS with amber AS mode
+      run: make kbs-amber-as
+
     - name: Lint
       run: make lint
 

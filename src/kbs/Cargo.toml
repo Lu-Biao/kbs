@@ -11,6 +11,7 @@ default = ["native-as", "rustls"]
 native-as = ["api-server/native-as"]
 native-as-no-verifier = ["api-server/native-as-no-verifier"]
 grpc-as = ["api-server/grpc-as"]
+amber-as = ["api-server/amber-as"]
 rustls = ["api-server/rustls"]
 openssl = ["api-server/openssl"]
 

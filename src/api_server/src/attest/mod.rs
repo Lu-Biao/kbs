@@ -16,6 +16,9 @@ mod grpc;
 #[cfg(any(feature = "native-as", feature = "native-as-no-verifier"))]
 mod native;
 
+#[cfg(feature = "amber-as")]
+pub mod amber;
+
 /// Interface of Attestation Service
 #[async_trait]
 pub trait Attest: Send + Sync {
@@ -44,8 +47,10 @@ impl AttestVerifier {
                     Arc::new(Mutex::new(native::Native::new(&kbs_config.as_config_file_path)?))
                 } else if #[cfg(feature = "grpc-as")] {
                     Arc::new(Mutex::new(grpc::Grpc::new(kbs_config).await?))
+                } else if #[cfg(feature = "amber-as")] {
+                    Arc::new(Mutex::new(amber::Amber::new(&kbs_config.amber)?))
                 } else {
-                    compile_error!("Please enable at least one of the following features: `native-as`, `native-as-no-verifier`, or `grpc-as` to continue.");
+                    compile_error!("Please enable at least one of the following features: `native-as`, `native-as-no-verifier`, `grpc-as` or `amber-as` to continue.");
                 }
             }
         };
