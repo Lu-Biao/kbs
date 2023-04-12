@@ -22,6 +22,7 @@ struct TdxEvidence {
 #[derive(Serialize, Debug)]
 struct AttestReqData {
     quote: String,
+    user_data: String,
 }
 
 #[derive(Deserialize, Debug)]
@@ -52,7 +53,7 @@ impl Attest for Amber {
     async fn attest_verify(
         &mut self,
         tee: Tee,
-        _nonce: &str,
+        nonce: &str,
         attestation: &str,
     ) -> Result<AttestationResults> {
         if tee != Tee::Tdx {
@@ -64,9 +65,16 @@ impl Attest for Amber {
         let tdx_evidence = serde_json::from_str::<TdxEvidence>(&attestation.tee_evidence)
             .map_err(|e| anyhow!("Deserialize TDX Evidence failed: {:?}", e))?;
 
+        // user_data
+        let user_data = format!(
+            "{}{}{}",
+            nonce, &attestation.tee_pubkey.k_mod, &attestation.tee_pubkey.k_exp
+        );
+
         // construct attest request data
         let req_data = AttestReqData {
             quote: tdx_evidence.quote,
+            user_data: base64::encode(&user_data),
         };
 
         let attest_req_body = serde_json::to_string(&req_data)
