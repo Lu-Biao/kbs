@@ -16,7 +16,7 @@ kbs-native-as-no-verifier:
 
 .PHONY: kbs-amber-as
 kbs-amber-as:
-	cargo build --no-default-features --features amber-as,rustls
+	cargo build -r --no-default-features --features amber-as,rustls
 
 .PHONY: kbs-native-as-openssl
 kbs-native-as-openssl:
