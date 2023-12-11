@@ -11,9 +11,10 @@ use attestation_service::{
 };
 use kbs_types::{Attestation, Tee};
 use serde_json::json;
+use tokio::sync::RwLock;
 
 pub struct Native {
-    inner: AttestationService,
+    inner: RwLock<AttestationService>,
 }
 
 #[async_trait]
@@ -21,7 +22,7 @@ impl Attest for Native {
     async fn set_policy(&mut self, input: &[u8]) -> Result<()> {
         let request: SetPolicyInput =
             serde_json::from_slice(input).context("parse SetPolicyInput")?;
-        self.inner.set_policy(request).await
+        self.inner.write().await.set_policy(request).await
     }
 
     async fn verify(
@@ -37,6 +38,8 @@ impl Attest for Native {
         let runtime_data_plaintext = json!({"tee-pubkey": attestation.tee_pubkey, "nonce": nonce});
 
         self.inner
+            .read()
+            .await
             .evaluate(
                 attestation.tee_evidence.into_bytes(),
                 tee,
@@ -54,7 +57,7 @@ impl Attest for Native {
 impl Native {
     pub async fn new(config: &AsConfig) -> Result<Self> {
         Ok(Self {
-            inner: AttestationService::new(config.clone()).await?,
+            inner: RwLock::new(AttestationService::new(config.clone()).await?),
         })
     }
 }
