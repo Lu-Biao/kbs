@@ -50,6 +50,8 @@ pub(crate) async fn attest(
     let mut session = locked_session.lock().await;
 
     info!("Cookie {} attestation {:?}", session.id(), attestation);
+    info!("DUMP attest REQUEST: Cookie {} attestation: {}", session.id(), &serde_json::to_string(&attestation).unwrap());
+
 
     if session.is_expired() {
         raise_error!(Error::ExpiredCookie);
