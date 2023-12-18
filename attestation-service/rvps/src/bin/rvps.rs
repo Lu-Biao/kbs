@@ -19,11 +19,11 @@ const DEFAULT_STORAGE: &str = "LocalFs";
 #[command(author, version, about, long_about = None)]
 pub struct Cli {
     /// Underlying storage engine that RVPS uses.
-    #[arg(short, long, default_value = DEFAULT_STORAGE)]
+    #[arg(long, default_value = DEFAULT_STORAGE)]
     pub storage: String,
 
     /// Socket addresses (IP:port) to listen on, e.g. 127.0.0.1:50003.
-    #[arg(short, long, default_value = DEFAULT_ADDR)]
+    #[arg(long, default_value = DEFAULT_ADDR)]
     pub socket: String,
 }
 
