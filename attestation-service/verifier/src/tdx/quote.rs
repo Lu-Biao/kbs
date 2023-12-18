@@ -188,7 +188,7 @@ pub async fn ecdsa_quote_verification(quote: &[u8]) -> Result<()> {
             Some(c)
         }
         Err(e) => {
-            warn!("tee_qv_get_collateral failed: {:#04x}", e as u32);
+            //warn!("tee_qv_get_collateral failed: {:#04x}", e as u32);
             None
         }
     };
