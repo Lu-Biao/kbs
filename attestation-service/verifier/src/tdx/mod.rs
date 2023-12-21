@@ -33,13 +33,19 @@ impl Verifier for Tdx {
         evidence: &[u8],
         expected_report_data: &ReportData,
         expected_init_data_hash: &InitDataHash,
+        request_id: &str,
     ) -> Result<TeeEvidenceParsedClaim> {
         let tdx_evidence = serde_json::from_slice::<TdxEvidence>(evidence)
             .context("Deserialize TDX Evidence failed.")?;
 
-        verify_evidence(expected_report_data, expected_init_data_hash, tdx_evidence)
-            .await
-            .map_err(|e| anyhow!("TDX Verifier: {:?}", e))
+        verify_evidence(
+            expected_report_data,
+            expected_init_data_hash,
+            tdx_evidence,
+            request_id,
+        )
+        .await
+        .map_err(|e| anyhow!("TDX Verifier: {:?}", e))
     }
 }
 
@@ -47,10 +53,21 @@ async fn verify_evidence(
     expected_report_data: &ReportData<'_>,
     expected_init_data_hash: &InitDataHash<'_>,
     evidence: TdxEvidence,
+    request_id: &str,
 ) -> Result<TeeEvidenceParsedClaim> {
     // Verify TD quote ECDSA signature.
     let quote_bin = base64::engine::general_purpose::STANDARD.decode(evidence.quote)?;
+    println!(
+        "[AS] [REQUEST_ID] {} Time: {} Started to call DCAP to verify quote.",
+        request_id,
+        chrono::Utc::now().timestamp_micros(),
+    );
     ecdsa_quote_verification(quote_bin.as_slice()).await?;
+    println!(
+        "[AS] [REQUEST_ID] {} Time: {} Finished calling DCAP to verify quote.",
+        request_id,
+        chrono::Utc::now().timestamp_micros(),
+    );
 
     // Parse quote and Compare report data
     let quote = parse_tdx_quote(&quote_bin)?;

@@ -43,6 +43,7 @@ impl Verifier for CsvVerifier {
         evidence: &[u8],
         expected_report_data: &ReportData,
         expected_init_data_hash: &InitDataHash,
+        _request_id: &str,
     ) -> Result<TeeEvidenceParsedClaim> {
         let tee_evidence =
             serde_json::from_slice::<CsvEvidence>(evidence).context("Deserialize Quote failed.")?;

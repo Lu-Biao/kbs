@@ -76,6 +76,7 @@ impl Verifier for Snp {
         evidence: &[u8],
         expected_report_data: &ReportData,
         expected_init_data_hash: &InitDataHash,
+        _request_id: &str,
     ) -> Result<TeeEvidenceParsedClaim> {
         let SnpEvidence {
             attestation_report: report,

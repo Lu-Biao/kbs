@@ -136,5 +136,6 @@ pub trait Verifier {
         evidence: &[u8],
         expected_report_data: &ReportData,
         expected_init_data_hash: &InitDataHash,
+        request_id: &str,
     ) -> Result<TeeEvidenceParsedClaim>;
 }

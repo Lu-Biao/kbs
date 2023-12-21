@@ -28,6 +28,7 @@ impl Verifier for Sample {
         evidence: &[u8],
         expected_report_data: &ReportData,
         expected_init_data_hash: &InitDataHash,
+        _request_id: &str,
     ) -> Result<TeeEvidenceParsedClaim> {
         let tee_evidence = serde_json::from_slice::<SampleTeeEvidence>(evidence)
             .context("Deserialize Quote failed.")?;

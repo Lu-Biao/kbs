@@ -48,15 +48,21 @@ impl Verifier for SgxVerifier {
         evidence: &[u8],
         expected_report_data: &ReportData,
         expected_init_data_hash: &InitDataHash,
+        request_id: &str,
     ) -> Result<TeeEvidenceParsedClaim> {
         let tee_evidence =
             serde_json::from_slice::<SgxEvidence>(evidence).context("Deserialize Quote failed.")?;
 
         debug!("TEE-Evidence<Sgx>: {:?}", &tee_evidence);
 
-        verify_evidence(expected_report_data, expected_init_data_hash, tee_evidence)
-            .await
-            .map_err(|e| anyhow!("SGX Verifier: {:?}", e))
+        verify_evidence(
+            expected_report_data,
+            expected_init_data_hash,
+            tee_evidence,
+            request_id,
+        )
+        .await
+        .map_err(|e| anyhow!("SGX Verifier: {:?}", e))
     }
 }
 
@@ -71,13 +77,24 @@ async fn verify_evidence(
     expected_report_data: &ReportData<'_>,
     expected_init_data_hash: &InitDataHash<'_>,
     evidence: SgxEvidence,
+    request_id: &str,
 ) -> Result<TeeEvidenceParsedClaim> {
     let quote_bin = base64::engine::general_purpose::STANDARD.decode(evidence.quote)?;
 
+    println!(
+        "[AS] [REQUEST_ID] {} Time: {} Started to call DCAP to verify quote.",
+        request_id,
+        chrono::Utc::now().timestamp_micros(),
+    );
     ecdsa_quote_verification(&quote_bin)
         .await
         .context("Evidence's identity verification error.")?;
 
+    println!(
+        "[AS] [REQUEST_ID] {} Time: {} Finished calling DCAP to verify quote.",
+        request_id,
+        chrono::Utc::now().timestamp_micros(),
+    );
     let quote = parse_sgx_quote(&quote_bin)?;
     if let ReportData::Value(expected_report_data) = expected_report_data {
         debug!("Check the binding of REPORT_DATA.");

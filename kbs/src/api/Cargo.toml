@@ -29,6 +29,7 @@ async-trait.workspace = true
 attestation-service = { path = "../../../attestation-service/attestation-service", default-features = false, optional = true }
 base64.workspace = true
 cfg-if.workspace = true
+chrono.workspace = true
 clap = { version = "4.3.21", features = ["derive", "env"] }
 config = "0.13.3"
 env_logger.workspace = true

@@ -8,6 +8,7 @@ anyhow.workspace = true
 async-trait.workspace = true
 attestation-service = { path = "../../attestation-service", features = ["rvps-grpc"] }
 base64.workspace = true
+chrono.workspace = true
 clap.workspace = true
 env_logger.workspace = true
 log.workspace = true

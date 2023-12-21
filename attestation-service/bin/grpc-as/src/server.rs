@@ -89,6 +89,11 @@ impl AttestationService for Arc<RwLock<AttestationServer>> {
         let request: AttestationRequest = request.into_inner();
 
         debug!("Evidence: {}", &request.evidence);
+        println!(
+            "[AS] [REQUEST_ID] {} Time: {} Received Attestation Request.",
+            request.request_id,
+            chrono::Utc::now().timestamp_micros(),
+        );
 
         let tee = to_kbs_tee(
             GrpcTee::from_i32(request.tee)
@@ -176,6 +181,7 @@ impl AttestationService for Arc<RwLock<AttestationServer>> {
                 init_data,
                 init_data_hash_algorithm,
                 policy_ids,
+                &request.request_id,
             )
             .await
             .map_err(|e| Status::aborted(format!("Attestation: {e:?}")))?;
@@ -183,6 +189,11 @@ impl AttestationService for Arc<RwLock<AttestationServer>> {
         debug!("Attestation Token: {}", &attestation_token);
 
         let res = AttestationResponse { attestation_token };
+        println!(
+            "[AS] [REQUEST_ID] {} Time: {} Responsed Attestation Request.",
+            request.request_id,
+            chrono::Utc::now().timestamp_micros(),
+        );
         Ok(Response::new(res))
     }
 }

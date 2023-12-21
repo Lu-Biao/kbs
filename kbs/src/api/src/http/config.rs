@@ -25,9 +25,6 @@ pub(crate) async fn attestation_policy(
     }
 
     attestation_service
-        .0
-        .lock()
-        .await
         .set_policy(&input)
         .await
         .map_err(|e| Error::PolicyEndpoint(format!("Set policy error {e}")))?;

@@ -88,7 +88,13 @@ impl Attest for Grpc {
         Ok(())
     }
 
-    async fn verify(&mut self, tee: Tee, nonce: &str, attestation: &str) -> Result<String> {
+    async fn verify(
+        &mut self,
+        tee: Tee,
+        nonce: &str,
+        attestation: &str,
+        request_id: &str,
+    ) -> Result<String> {
         let attestation: Attestation = serde_json::from_str(attestation)?;
 
         // TODO: align with the guest-components/kbs-protocol side.
@@ -104,7 +110,14 @@ impl Attest for Grpc {
             runtime_data: Some(RuntimeData::StructuredRuntimeData(runtime_data_plaintext)),
             init_data: None,
             policy_ids: vec!["default".to_string()],
+            request_id: request_id.to_string(),
         });
+
+        println!(
+            "[KBS] [REQUEST_ID] {} Time: {} before make attestation request to CoCoAS.",
+            request_id,
+            chrono::Utc::now().timestamp_micros(),
+        );
 
         let token = self
             .inner
@@ -113,6 +126,11 @@ impl Attest for Grpc {
             .into_inner()
             .attestation_token;
 
+        println!(
+            "[KBS] [REQUEST_ID] {} Time: {} after make attestation request to CoCoAS.",
+            request_id,
+            chrono::Utc::now().timestamp_micros(),
+        );
         Ok(token)
     }
 }

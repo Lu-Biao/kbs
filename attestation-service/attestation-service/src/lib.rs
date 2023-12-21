@@ -148,6 +148,7 @@ impl AttestationService {
         init_data: Option<Data>,
         init_data_hash_algorithm: HashAlgorithm,
         policy_ids: Vec<String>,
+        request_id: &str,
     ) -> Result<String> {
         let verifier = verifier::to_verifier(&tee)?;
 
@@ -168,7 +169,7 @@ impl AttestationService {
         };
 
         let claims_from_tee_evidence = verifier
-            .evaluate(&evidence, &report_data, &init_data_hash)
+            .evaluate(&evidence, &report_data, &init_data_hash, request_id)
             .await
             .map_err(|e| anyhow!("Verifier evaluate failed: {e:?}"))?;
 

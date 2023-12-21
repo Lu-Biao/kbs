@@ -78,6 +78,7 @@ impl Verifier for CCA {
         evidence: &[u8],
         expected_report_data: &ReportData,
         expected_init_data_hash: &InitDataHash,
+        _request_id: &str,
     ) -> Result<TeeEvidenceParsedClaim> {
         let ReportData::Value(expected_report_data) = expected_report_data else {
             bail!("CCA verifier must provide report data field!");

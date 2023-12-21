@@ -22,6 +22,14 @@ pub(crate) async fn auth(
 
     let session = Session::from_request(&request, *timeout.into_inner())
         .map_err(|e| Error::FailedAuthentication(format!("Session: {e}")))?;
+
+    let request_id = session.id().to_string();
+    println!(
+        "[KBS] [REQUEST_ID] {} Time: {} Get Auth Request.",
+        request_id,
+        chrono::Utc::now().timestamp_micros(),
+    );
+
     let response = HttpResponse::Ok().cookie(session.cookie()).json(Challenge {
         nonce: session.nonce().to_string(),
         extra_params: "".to_string(),
@@ -32,6 +40,11 @@ pub(crate) async fn auth(
         .await
         .insert(session.id().to_string(), Arc::new(Mutex::new(session)));
 
+    println!(
+        "[KBS] [REQUEST_ID] {} Time: {} Response Auth Request.",
+        request_id,
+        chrono::Utc::now().timestamp_micros(),
+    );
     Ok(response)
 }
 
@@ -49,20 +62,23 @@ pub(crate) async fn attest(
 
     let mut session = locked_session.lock().await;
 
-    info!("Cookie {} attestation {:?}", session.id(), attestation);
-
+    let request_id = session.id().to_string();
+    info!("Cookie {} attestation {:?}", request_id, attestation);
+    println!(
+        "[KBS] [REQUEST_ID] {} Time: {} Get Attest Request.",
+        request_id,
+        chrono::Utc::now().timestamp_micros(),
+    );
     if session.is_expired() {
         raise_error!(Error::ExpiredCookie);
     }
 
     let token = attestation_service
-        .0
-        .lock()
-        .await
         .verify(
             session.tee(),
             session.nonce(),
             &serde_json::to_string(&attestation).unwrap(),
+            session.id(),
         )
         .await
         .map_err(|e| Error::AttestationFailed(e.to_string()))?;
@@ -87,6 +103,11 @@ pub(crate) async fn attest(
     }))
     .map_err(|e| Error::TokenIssueFailed(format!("Serialize token failed {e}")))?;
 
+    println!(
+        "[KBS] [REQUEST_ID] {} Time: {} Response Attest Request.",
+        request_id,
+        chrono::Utc::now().timestamp_micros(),
+    );
     Ok(HttpResponse::Ok()
         .cookie(session.cookie())
         .content_type("application/json")

@@ -76,6 +76,8 @@ message AttestationRequest {
     // List of IDs of the policy used to check evidence. If not provided,
     // a "default" one will be used.
     repeated string policy_ids = 9;
+
+    string request_id = 10;
 }
 
 message AttestationResponse {

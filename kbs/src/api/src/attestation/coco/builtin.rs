@@ -24,7 +24,13 @@ impl Attest for Native {
         self.inner.set_policy(request).await
     }
 
-    async fn verify(&mut self, tee: Tee, nonce: &str, attestation: &str) -> Result<String> {
+    async fn verify(
+        &mut self,
+        tee: Tee,
+        nonce: &str,
+        attestation: &str,
+        request_id: &str,
+    ) -> Result<String> {
         let attestation: Attestation = serde_json::from_str(attestation)?;
 
         // TODO: align with the guest-components/kbs-protocol side.
@@ -39,6 +45,7 @@ impl Attest for Native {
                 None,
                 HashAlgorithm::Sha384,
                 vec!["default".into()],
+                request_id,
             )
             .await
     }

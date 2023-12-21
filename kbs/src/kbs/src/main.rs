@@ -43,11 +43,11 @@ async fn main() -> Result<()> {
     let attestation_service = {
         cfg_if::cfg_if! {
             if #[cfg(any(feature = "coco-as-builtin", feature = "coco-as-builtin-no-verifier"))] {
-                AttestationService::new(&kbs_config.as_config.unwrap_or_default()).await?
+                AttestationService::new(kbs_config.as_config.unwrap_or_default())
             } else if #[cfg(feature = "coco-as-grpc")] {
-                AttestationService::new(&kbs_config.grpc_config.unwrap_or_default()).await?
+                AttestationService::new(kbs_config.grpc_config.unwrap_or_default())
             } else if #[cfg(feature = "intel-trust-authority-as")] {
-                AttestationService::new(&kbs_config.intel_trust_authority_config)?
+                AttestationService::new(kbs_config.intel_trust_authority_config)
             } else {
                 compile_error!("Please enable at least one of the following features: `coco-as-builtin`, `coco-as-builtin-no-verifier`, `coco-as-grpc` or `intel-trust-authority-as` to continue.");
             }
