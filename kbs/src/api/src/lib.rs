@@ -238,6 +238,16 @@ impl ApiServer {
         #[cfg(feature = "as")]
         let sessions = web::Data::new(SessionMap::new());
 
+        #[cfg(feature = "as")]
+        let sessions_clone = sessions.clone();
+
+        #[cfg(feature = "as")]
+        tokio::spawn(async move {
+            loop {
+                tokio::time::sleep(std::time::Duration::from_secs(60)).await;
+                sessions_clone.sessions.retain_async(|_, v| !v.is_expired()).await;
+            }
+        });
         let http_timeout = self.http_timeout;
 
         #[cfg(feature = "resource")]
