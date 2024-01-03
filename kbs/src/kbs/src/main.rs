@@ -18,7 +18,17 @@ use api_server::{
 use clap::Parser;
 use log::{debug, info, warn};
 
-#[tokio::main]
+/*
+fn main() {
+    let _ = tokio::runtime::Builder::new_multi_thread()
+        .enable_all()
+        .build()
+        .unwrap()
+        .block_on(start_server());
+}
+*/
+
+#[tokio::main(flavor = "multi_thread", worker_threads = 200)]
 async fn main() -> Result<()> {
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
 

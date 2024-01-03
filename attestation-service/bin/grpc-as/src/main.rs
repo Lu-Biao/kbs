@@ -30,7 +30,7 @@ pub struct Cli {
     pub socket: SocketAddr,
 }
 
-#[tokio::main]
+#[tokio::main(flavor = "multi_thread", worker_threads = 200)]
 async fn main() -> Result<()> {
     env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("info")).init();
 
